@@ -56,9 +56,11 @@ app.get('/popular', PostController.getAllPopular);
 app.get('/tags/:name', PostController.getAllByTag);
 app.get('/posts', PostController.getAll);
 
-app.post('/coment/:id', checkAuth, comentCreateValidation, handleValidationErrors, ComentController.create);
+app.post('/comment/:id', checkAuth, comentCreateValidation, handleValidationErrors, ComentController.create);
 app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create);
+app.delete('/comment/:postId/:commentId', checkAuth, ComentController.remove)
 app.delete('/posts/:id', checkAuth, PostController.remove);
+app.patch('/comment/:id', checkAuth, comentCreateValidation, handleValidationErrors, ComentController.update);
 app.patch('/posts/:id', checkAuth, postCreateValidation, handleValidationErrors, PostController.update);
 
 app.listen(3333, (err) => {
