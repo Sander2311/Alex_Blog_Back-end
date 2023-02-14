@@ -3,7 +3,7 @@ import PostModel from "../models/Post.js";
 
 export const getLastComents = async (req, res) => {
     try {
-        const coments = await ComentModel.find().sort({ createdAt: -1 }).limit(5).populate('user').exec();
+        const coments = await ComentModel.find().sort({ createdAt: -1 }).limit(5).populate('user',  '-passwordHash').exec();
 
         res.json(coments);
     } catch (err) {
