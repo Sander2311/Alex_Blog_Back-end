@@ -13,6 +13,12 @@ export const registerValidation = [
     body('avatarUrl', 'not valid avatarUrl').optional().isURL(), // if not - its notmal, but if yes - check is url or not
 ];
 
+export const updateValidation = [
+    body('email', 'not valid email').isEmail(),  // check is email or not
+    body('fullName', 'not valid fullName').isLength({ min: 3}),
+    body('avatarUrl', 'not valid avatarUrl').optional().isURL(), // if not - its notmal, but if yes - check is url or not
+];
+
 export const postCreateValidation = [
     body('title', 'Title of post').isLength({ min: 3 }).isString(),  
     body('text', 'Text of post').isLength({ min: 5 }).isString(), 

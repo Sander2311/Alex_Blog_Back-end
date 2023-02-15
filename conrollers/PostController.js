@@ -56,6 +56,20 @@ export const getAllByTag = async (req, res) => {
     }
 };
 
+export const getAllByUser = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const posts = await PostModel.find({ user:  userId}).sort({ createdAt: -1 }).populate('user',  '-passwordHash').exec();// +get user info
+
+        res.json(posts);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Cannot get posts',
+        });
+    }
+};
+
 export const getOne = async (req, res) => {
     try {
         const postId = req.params.id;

@@ -4,7 +4,7 @@ import cors from 'cors';
 
 import mongoose from 'mongoose';
 
-import { registerValidation, loginValidation, postCreateValidation, comentCreateValidation } from './validations.js';
+import { registerValidation, loginValidation, postCreateValidation, comentCreateValidation, updateValidation } from './validations.js';
 
 import checkAuth from './utils/checkAuth.js';
 import handleValidationErrors from './utils/handleValidationErrors.js';
@@ -54,6 +54,7 @@ app.get('/posts/tags', PostController.getLastTags);
 app.get('/posts/:id', PostController.getOne);
 app.get('/popular', PostController.getAllPopular);
 app.get('/tags/:name', PostController.getAllByTag);
+app.get('/posts-by-user/:id', PostController.getAllByUser);
 app.get('/posts', PostController.getAll);
 
 app.post('/comment/:id', checkAuth, comentCreateValidation, handleValidationErrors, ComentController.create);
@@ -62,6 +63,7 @@ app.delete('/comment/:postId/:commentId', checkAuth, ComentController.remove)
 app.delete('/posts/:id', checkAuth, PostController.remove);
 app.patch('/comment/:id', checkAuth, comentCreateValidation, handleValidationErrors, ComentController.update);
 app.patch('/posts/:id', checkAuth, postCreateValidation, handleValidationErrors, PostController.update);
+app.patch('/user/:id', checkAuth, updateValidation, handleValidationErrors, UserController.update);
 
 app.listen(3333, (err) => {
     if(err){

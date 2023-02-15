@@ -3,8 +3,8 @@ import bcrypt from "bcrypt";
 
 import UserModel from '../models/User.js';
 
-export const register = async (req, res) =>{ 
-    try{
+export const register = async (req, res) => {
+    try {
         const password = req.body.password;
         const salt = await bcrypt.genSalt(10); // algr encryption pass
         const hash = await bcrypt.hash(password, salt); //our hass of pass
@@ -21,10 +21,10 @@ export const register = async (req, res) =>{
         const token = jwt.sign({ // after register create token
             _id: user._id,
         },
-        'keyToken123', // key of token
-         {
-            expiresIn: '30d', //life time of the token 
-         }
+            'keyToken123', // key of token
+            {
+                expiresIn: '30d', //life time of the token 
+            }
         );
 
         const { passwordHash, ...userData } = user._doc;
@@ -33,7 +33,7 @@ export const register = async (req, res) =>{
             ...userData,
             token,
         });
-    }catch(err){
+    } catch (err) {
         console.log(err);
         res.status(500).json({
             message: 'Cannot register',
@@ -42,18 +42,18 @@ export const register = async (req, res) =>{
 }
 
 export const login = async (req, res) => {
-    try{
+    try {
         const user = await UserModel.findOne({ email: req.body.email }); //find by id
 
-        if(!user){
+        if (!user) {
             return res.status(401).json({
                 message: 'User is not exist',
             });
         }
 
         const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);//if pass from req = pass from BD of the user
-        
-        if(!isValidPass){ // pass != pass in BD
+
+        if (!isValidPass) { // pass != pass in BD
             return res.status(401).json({
                 message: 'Email or Password is no valid',
             });
@@ -62,10 +62,10 @@ export const login = async (req, res) => {
         const token = jwt.sign({ // after login create token
             _id: user._id,
         },
-        'keyToken123', // key of token
-         {
-            expiresIn: '30d', //life time of the token 
-         }
+            'keyToken123', // key of token
+            {
+                expiresIn: '30d', //life time of the token 
+            }
         );
 
         const { passwordHash, ...userData } = user._doc;
@@ -75,7 +75,7 @@ export const login = async (req, res) => {
             token,
         });
 
-    } catch(err){
+    } catch (err) {
         console.log(err);
         res.status(500).json({
             message: 'Cannot login',
@@ -83,11 +83,11 @@ export const login = async (req, res) => {
     }
 };
 
-export const getMe = async (req, res) =>{
-    try{
+export const getMe = async (req, res) => {
+    try {
         const user = await UserModel.findById(req.userId);
 
-        if(!user){
+        if (!user) {
             return res.status(404).json({
                 message: 'User is not exist',
             });
@@ -97,10 +97,48 @@ export const getMe = async (req, res) =>{
 
         res.json(userData);
 
-    } catch(err){
+    } catch (err) {
         console.log(err);
         res.status(500).json({
             message: 'You do not have access',
         });
     }
 }
+
+export const update = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        await UserModel.updateOne(
+            {
+                _id: userId,
+            },
+            { //params for update
+                email: req.body.email,
+                fullName: req.body.fullName,
+                avatarUrl: req.body.avatarUrl,
+            },
+        );
+
+        const user = await UserModel.find({_id: userId}).exec();
+        const token = jwt.sign({ // after register create token
+            _id: user._id,
+        },
+            'keyToken123', // key of token
+            {
+                expiresIn: '30d', //life time of the token 
+            }
+        );
+
+        const { passwordHash, ...userData } = user[0]._doc;
+
+        res.json({
+            ...userData,
+            token,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Cannot update user',
+        });
+    }
+};
